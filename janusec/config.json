@@ -1,0 +1,25 @@
+{
+    "node_role": "primary",
+    "listen_http": "",
+    "listen_https": "",
+    "primary_node": {
+            "admin": {
+                    "listen": true,
+                    "listen_http": ":9080",
+                    "listen_https": ":9443",
+                    "portal": "https://your_domain.com:9443/janusec-admin/",
+                    "webssh_enabled": false
+            },
+            "database": {
+                    "host": "postgresql",
+                    "port": "5432",
+                    "user": "janusec",
+                    "password": "123456",
+                    "dbname": "janusec"
+            }
+    },
+    "replica_node": {
+            "node_key": "",
+            "sync_addr": "http://gateway.primary_node.com:9080/janusec-admin/api"
+    }
+}
