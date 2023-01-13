@@ -1,0 +1,68 @@
+name: Build Image
+
+on:
+  workflow_dispatch: 
+  push:
+    branches: [ main, orrn/* ]
+    paths:
+      - '**'
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Detect changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          base: ${{ github.ref }}
+          filters: '.github/filters.yml'
+          list-files: json
+  build:
+    name: Build
+    needs: changes
+    strategy:
+      matrix:
+        image: ${{ fromJSON(needs.changes.outputs.packages) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - id: get-container-metadata
+        name: Get image tag
+        run: |
+          if [[ -d "${{ matrix.image }}" ]]; then
+            tag="$(grep -oE "work.amap.image.version=\".+\"" ${{ matrix.image }}/Dockerfile | sed -nr "s|work.amap.image.version=\"(.+)\"|\1|p")"
+            if [[ -z "${tag}" ]]; then
+              echo "No tag found for: ${{ matrix.image }}"
+              exit 1
+            else
+              echo "tag=${tag}" >> $GITHUB_OUTPUT
+            fi
+          else
+            exit 1
+          fi
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ matrix.image }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: gotafire/${{ matrix.image }}:${{ steps.get-container-metadata.outputs.tag }}

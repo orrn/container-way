@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: docker.io/bitnami/postgresql:13
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'postgresql_data:/bitnami/postgresql'
+    environment:
+      - 'POSTGRESQL_USERNAME=janusec'
+      - 'POSTGRESQL_PASSWORD=123456'
+      - 'POSTGRESQL_DATABASE=janusec'
+    networks:
+      - janusec
+    healthcheck:
+      test: "pg_isready -U ${POSTGRESQL_USERNAME} -d ${POSTGRESQL_DATABASE}"
+      interval: 2s
+      timeout: 5s
+      start_period: 30s
+      retries: 60
+
+  janusec:
+    image: docker.io/gotafire/janusec:v1.2.9
+    ports:
+      - '180:80'
+      - '1443:443'
+      - '9080:9080'
+    environment:
+      - 'POSTGRESQL_HOST=postgresql'
+    volumes:
+      - 'janusec_certs:/janusec/certs/'
+      #- './config.json:/janusec/config.json'
+      #- 'janusec_log:/janusec/log/'
+    networks:
+      - janusec
+    depends_on:
+      postgresql:
+        condition: service_healthy
+
+volumes:
+  postgresql_data:
+    driver: local
+  janusec_certs:
+    driver: local
+
+networks:
+  janusec:
+    driver: bridge
