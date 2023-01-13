@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgresql:
     image: docker.io/bitnami/postgresql:13
+    restart: always
     ports:
       - '5432:5432'
     volumes:
@@ -22,12 +23,11 @@ services:
 
   janusec:
     image: docker.io/gotafire/janusec:v1.2.9
+    restart: always
     ports:
-      - '180:80'
-      - '1443:443'
+      - '80:80'
+      - '443:443'
       - '9080:9080'
-    environment:
-      - 'POSTGRESQL_HOST=postgresql'
     volumes:
       - 'janusec_certs:/janusec/certs/'
       #- './config.json:/janusec/config.json'
