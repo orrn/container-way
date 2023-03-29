@@ -31,5 +31,4 @@ RUN wget https://gosspublic.alicdn.com/ossutil/1.7.14/ossutil64 -P /bin \
     && wget https://downloads.mongodb.com/compass/mongodb-mongosh-shared-openssl3_1.6.0_amd64.deb -P /tmp \
     && dpkg -i /tmp/mongodb-mongosh-shared-openssl3_1.6.0_amd64.deb \
     && rm -f /tmp/mongodb-mongosh-shared-openssl3_1.6.0_amd64.deb
-COPY --chmod=755 mod_mirrors.sh /
-CMD ["bash", "-c", "echo Container tools is Running ; sleep 86400"]
+CMD ["bash", "-c", "echo Container tools is Running ; sleep 864000"]
