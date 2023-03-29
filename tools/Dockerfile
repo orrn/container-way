@@ -4,8 +4,8 @@ LABEL org.opencontainers.image.source="https://github.com/orrn/container-way" \
       work.amap.image.version="stable"
 # RUN sed -i "s#archive.ubuntu.com#mirrors.cloud.aliyuncs.com#g" /etc/apt/sources.list \
 #     && sed -i "s#security.ubuntu.com#mirrors.cloud.aliyuncs.com#g" /etc/apt/sources.list
-RUN sed -i "s#archive.ubuntu.com#mirrors.aliyuncs.com#g" /etc/apt/sources.list \
-    && sed -i "s#security.ubuntu.com#mirrors.aliyuncs.com#g" /etc/apt/sources.list
+# RUN sed -i "s#archive.ubuntu.com#mirrors.aliyuncs.com#g" /etc/apt/sources.list \
+#     && sed -i "s#security.ubuntu.com#mirrors.aliyuncs.com#g" /etc/apt/sources.list
 RUN apt update \
     && apt install -y -q \
        dnsutils \
